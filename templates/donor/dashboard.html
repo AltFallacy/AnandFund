@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Donor Dashboard</h2>
+
+<div class="card">
+    <p>Welcome, {{ current_user.username }}! Thanks for your continued support to Anandvan.</p>
+</div>
+
+<div class="stats-container">
+    <div class="stat-card">
+        <h3>Your Total Donations</h3>
+        <p>₹ {{ "{:,.2f}".format(donations|sum(attribute='amount')) }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Causes Supported</h3>
+        <p>{{ donations | map(attribute='project_id') | unique | list | length }}</p>
+    </div>
+</div>
+
+<div class="card">
+    <h3>Your Past Donations</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Project / Cause</th>
+                <th>Amount (₹)</th>
+                <th>Receipt</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for donation in donations %}
+            <tr>
+                <td>{{ donation.date.strftime('%Y-%m-%d') }}</td>
+                <td>{{ donation.project.name }}</td>
+                <td>{{ "{:,.2f}".format(donation.amount) }}</td>
+                <td><button onclick="alert('Receipt downloading is a planned feature!')" style="background-color: #27ae60;">Download Receipt</button></td>
+            </tr>
+            {% endfor %}
+            {% if not donations %}
+            <tr>
+                <td colspan="4">You haven't made any donations yet. <a href="{{ url_for('main.donate') }}">Donate now!</a></td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h3>Our Active Projects</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Project Name</th>
+                <th>Description</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for project in projects %}
+            <tr>
+                <td>{{ project.name }}</td>
+                <td>{{ project.description }}</td>
+                <td><a class="btn" href="{{ url_for('main.donate') }}">Support this Cause</a></td>
+            </tr>
+            {% endfor %}
+            {% if not projects %}
+            <tr>
+                <td colspan="3">No active projects available currently.</td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

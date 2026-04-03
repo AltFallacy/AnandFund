@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Staff Dashboard</h2>
+
+<div class="card">
+    <p>Welcome, {{ current_user.username }}! You are logged in as Staff.</p>
+</div>
+
+<div class="card">
+    <h3>Active Projects</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Project Name</th>
+                <th>Allocated Budget (₹)</th>
+                <th>Total Expenses (₹)</th>
+                <th>Remaining Budget (₹)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for project in projects %}
+            {% set total_exp = project.expenses | sum(attribute='amount') %}
+            <tr>
+                <td>{{ project.id }}</td>
+                <td>{{ project.name }}</td>
+                <td>{{ "{:,.2f}".format(project.allocated_budget) }}</td>
+                <td>{{ "{:,.2f}".format(total_exp) }}</td>
+                <td>{{ "{:,.2f}".format(project.allocated_budget - total_exp) }}</td>
+            </tr>
+            {% endfor %}
+            {% if not projects %}
+            <tr>
+                <td colspan="5">No projects found.</td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

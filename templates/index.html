@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css" 
+    integrity="sha384-SZXxX4whJ79/gErwcOYf+zWLeJdY/qpuqC4cAa9rOGUstPomtqpuNWT9wdPEn2fk" crossorigin="anonymous">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    <title>Anandvan</title>
+</head>
+<body>
+    <div class="nevbar" id="nevbar">
+        <div class="logo">
+            <a href="/" id="logo"><h1><span>Anandvan</span></h1></a>
+        </div>
+        <div class="menu" id="menu">
+            <ul>
+                <li><a id="home" href="/">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a id="donate" href="{{ url_for('main.donate') }}">Donate</a></li>
+                <li><a id="login" href="{{ url_for('main.login') }}">Login</a></li>
+            </ul>
+        </div>
+        <div class="menuicon">
+            <i id="menuicon" onclick="togglemenu()" class="fas fa-chevron-circle-down"> <span>MENU</span></i>
+        </div>
+    </div>
+
+    <div class="cover">
+        <div class="information">
+            <h1>-</h1>
+            <h3>Cost & Donation Management</h3>
+            <h2>Transparent tracking for a</h2>
+            <h1> <span>BETTER WORLD</span> </h1>
+            <h3> <span>Anandvan Organization</span> </h3>
+            <h1>-</h1>
+            <a href="#projects"><button>PROJECTS</button></a>
+            <a href="{{ url_for('main.donate') }}"><button>DONATE</button></a>
+        </div>
+    </div>
+
+    <div class="explore" id="explore"></div>
+
+    <div class="about" id="about">
+        <div class="imgcontanner">
+            <div class="aboutimg"></div>
+        </div>
+        <div class="aboutcontent">
+            <h5>_</h5>
+            <h1>Why Support Anandvan?</h1>
+            <p>At Anandvan, we believe in complete transparency. Every donation is mapped to a specific department or public project so you know exactly where your funds are going.</p>
+            <p>Our dedicated staff maintain organized budgets to maximize the impact of every single rupee we receive.</p>
+            <a href="{{ url_for('main.donate') }}">BECOME A DONOR</a>
+            <br>
+            <br>
+            <h5>_</h5>
+        </div>
+    </div>
+
+    <!-- ----------------------------------  Service / Projects -------------------------------------- -->
+    <div class="service" id="projects">
+        <h5>CAUSES</h5>
+        <h1>Our Core Initiatives</h1>
+
+        <div class="details">
+
+            <div class="info">
+                <div class="logo"><i class="fas fa-seedling"></i></div>
+                <p id="head">Sustainable Agriculture</p>
+                <p>Providing resources and education to local farmers for sustainable growth.</p>
+            </div>
+
+            <div class="info" data-aos="fade-up">
+                <div class="logo"><i class="fas fa-hand-holding-water"></i></div>
+                <p id="head">Clean Water Access</p>
+                <p>Building local wells and sanitization projects to ensure clean drinking water.</p>
+            </div>
+
+            <div class="info" data-aos="fade-up">
+                <div class="logo"><i class="fas fa-school"></i></div>
+                <p id="head">Primary Education</p>
+                <p>Establishing local schools and providing materials for children to thrive.</p>
+            </div>
+
+            <div class="info" data-aos="fade-up">
+                <div class="logo"><i class="fas fa-heartbeat"></i></div>
+                <p id="head">Community Health</p>
+                <p>Running free medical camps and facilitating emergency medical funds.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!---------------------------- contact ------------------- -->
+    
+    <div class="contact" id="contact">
+        <h1>REACH OUT</h1>
+        <br>
+        <div class="contactcontanner">
+            
+            <div class="contanner">
+                <div class="heading">
+                    <div class="icon"><i class="far fa-map"></i></div>
+                    <div class="info">
+                        <p>Address : </p>
+                        <p id="contactinfo">Anandvan Headquarters, India</p>
+                    </div>
+                </div>
+                
+                <div class="heading">
+                    <div class="icon"><i class="fas fa-phone-alt"></i></div>
+                    <div class="info">
+                        <p>Phone : </p>
+                        <p id="contactinfo">+91-0000-0000</p>
+                    </div>
+                </div>
+                
+                <div class="heading">
+                    <div class="icon"><i class="far fa-envelope"></i></div>
+                    <div class="info">
+                        <p>Email : </p>
+                        <p id="contactinfo">contact@anandvan.org</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="messageform">
+                <div class="form">
+                    <form action="#" method="POST">
+                        <style>
+                            ::placeholder {color: rgba(255, 255, 255, 0.7);}
+                        </style>
+                        <input type="text" name="name" placeholder="NAME" required>
+                        <input type="email" name="email" placeholder="EMAIL" required>
+                        <input type="text" name="subject" placeholder="SUBJECT" required>
+                        <textarea name="message" id="inputbox"  cols="30" rows="5" placeholder="MESSAGE" required></textarea>
+                        <button type="submit" onclick="alert('Message feature coming soon.')">SEND MESSAGE</button>
+                    </form>
+                </div>
+            </div>
+        </div>          
+    </div>
+
+    <!-- ------------------------------  Footer  ---------------------------------- -->
+    <footer>
+        <p>&copy 2026 Anandvan Cost and Donation Management | Built Securely</p>
+    </footer>
+    
+    <script>
+        var menu = document.getElementById("menu");
+        menu.style.maxHeight = "0px";
+        function togglemenu() {
+            if (menu.style.maxHeight == "0px") {
+                menu.style.maxHeight = "390px";
+            }
+            else {
+                menu.style.maxHeight = "0px";
+            }
+        }
+    </script>
+</body>
+</html>

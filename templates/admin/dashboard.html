@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Admin Dashboard</h2>
+
+<div class="stats-container">
+    <div class="stat-card">
+        <h3>Total Budget</h3>
+        <p>₹ {{ "{:,.2f}".format(total_budget) }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Total Expenses</h3>
+        <p>₹ {{ "{:,.2f}".format(total_expenses) }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Total Donations</h3>
+        <p>₹ {{ "{:,.2f}".format(total_donations) }}</p>
+    </div>
+</div>
+
+<div class="card">
+    <div style="width: 50%; margin: auto;">
+        <canvas id="financialChart" 
+            data-budget="{{ total_budget }}" 
+            data-expenses="{{ total_expenses }}" 
+            data-donations="{{ total_donations }}">
+        </canvas>
+    </div>
+</div>
+
+<div class="card">
+    <h3>Add New Project / Department</h3>
+    <form action="{{ url_for('main.add_project') }}" method="POST">
+        <div class="form-group">
+            <label>Project Name</label>
+            <input type="text" name="name" required>
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <input type="text" name="description">
+        </div>
+        <div class="form-group">
+            <label>Allocated Budget (₹)</label>
+            <input type="number" step="0.01" name="budget" required>
+        </div>
+        <button type="submit">Add Project</button>
+    </form>
+</div>
+
+<div class="card">
+    <h3>Existing Projects</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Budget (₹)</th>
+                <th>Expenses (₹)</th>
+                <th>Donations (₹)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for project in projects %}
+            <tr>
+                <td>{{ project.id }}</td>
+                <td>{{ project.name }}</td>
+                <td>{{ "{:,.2f}".format(project.allocated_budget) }}</td>
+                <td>{{ "{:,.2f}".format(project.expenses|sum(attribute='amount')) }}</td>
+                <td>{{ "{:,.2f}".format(project.donations|sum(attribute='amount')) }}</td>
+            </tr>
+            {% endfor %}
+            {% if not projects %}
+            <tr>
+                <td colspan="5">No projects found.</td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h3>Add New User</h3>
+    <form action="{{ url_for('main.add_user') }}" method="POST">
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" name="username" required>
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" required>
+        </div>
+        <div class="form-group">
+            <label>Role</label>
+            <select name="role">
+                <option value="Staff">Staff</option>
+                <option value="Donor">Donor</option>
+                <option value="Admin">Admin</option>
+            </select>
+        </div>
+        <button type="submit">Create User</button>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const canvas = document.getElementById('financialChart');
+    const b = parseFloat(canvas.dataset.budget) || 0;
+    const e = parseFloat(canvas.dataset.expenses) || 0;
+    const d = parseFloat(canvas.dataset.donations) || 0;
+
+    const ctx = canvas.getContext('2d');
+    const myChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Total Budget', 'Total Expenses', 'Total Donations'],
+            datasets: [{
+                label: 'Financials (₹)',
+                data: [b, e, d],
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(255, 99, 132, 0.6)',
+                    'rgba(75, 192, 192, 0.6)'
+                ],
+                borderColor: [
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(75, 192, 192, 1)'
+                ],
+                borderWidth: 1
+            }]
+        }
+    });
+</script>
+{% endblock %}
