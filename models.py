@@ -16,6 +16,7 @@ class Project(db.Model):
     name = db.Column(db.String(150), nullable=False)
     description = db.Column(db.Text, nullable=True)
     allocated_budget = db.Column(db.Float, default=0.0)
+    image_path = db.Column(db.String(300), nullable=True)
     
     expenses = db.relationship('Expense', backref='project', lazy=True)
     donations = db.relationship('Donation', backref='project', lazy=True)

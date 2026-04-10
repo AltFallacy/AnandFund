@@ -140,7 +140,21 @@ def add_project():
     description = request.form.get('description')
     budget = float(request.form.get('budget', 0))
     
-    new_project = Project(name=name, description=description, allocated_budget=budget)
+    image_path = None
+    if 'image' in request.files:
+        file = request.files['image']
+        if file and file.filename != '':
+            filename = secure_filename(f"{datetime.now().timestamp()}_{file.filename}")
+            upload_subdir = os.path.join(current_app.config['UPLOAD_FOLDER'], 'projects')
+            if not os.path.exists(upload_subdir):
+                os.makedirs(upload_subdir)
+            
+            full_path = os.path.join(upload_subdir, filename)
+            file.save(full_path)
+            # Store path relative to 'static' for easy use in templates
+            image_path = f"uploads/projects/{filename}"
+    
+    new_project = Project(name=name, description=description, allocated_budget=budget, image_path=image_path)
     db.session.add(new_project)
     db.session.commit()
     flash('Initiative added successfully.', 'success')
@@ -154,6 +168,27 @@ def edit_project(project_id):
     project.name = request.form.get('name')
     project.description = request.form.get('description')
     project.allocated_budget = float(request.form.get('budget', 0))
+    
+    if 'image' in request.files:
+        file = request.files['image']
+        if file and file.filename != '':
+            # Delete old image if it exists
+            if project.image_path:
+                old_path = os.path.join(current_app.root_path, 'static', project.image_path)
+                if os.path.exists(old_path):
+                    try:
+                        os.remove(old_path)
+                    except Exception as e:
+                        print(f"Error deleting old image: {e}")
+
+            filename = secure_filename(f"{datetime.now().timestamp()}_{file.filename}")
+            upload_subdir = os.path.join(current_app.config['UPLOAD_FOLDER'], 'projects')
+            if not os.path.exists(upload_subdir):
+                os.makedirs(upload_subdir)
+                
+            full_path = os.path.join(upload_subdir, filename)
+            file.save(full_path)
+            project.image_path = f"uploads/projects/{filename}"
     
     db.session.commit()
     flash('Initiative updated successfully.', 'success')

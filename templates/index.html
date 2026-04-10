@@ -87,7 +87,7 @@
 
         <div class="details">
             {% for project in projects[:4] %}
-            <div class="info-card" style="background-image: url('https://source.unsplash.com/400x300/?{{ project.name|replace(' ', ',') }},kids');">
+            <div class="info-card" style="background-image: url('{{ url_for('static', filename=project.image_path) if project.image_path else 'https://source.unsplash.com/400x300/?' + project.name|replace(' ', ',') + ',kids' }}');">
                 <div class="card-overlay">
                     <div class="logo"><i class="fas fa-hand-holding-heart"></i></div>
                     <h3>{{ project.name }}</h3>

@@ -57,6 +57,7 @@
                 <thead>
                     <tr>
                         <th>Name</th>
+                        <th>Image</th>
                         <th>Budgeted</th>
                         <th>Raised</th>
                         <th>Spent</th>
@@ -67,6 +68,13 @@
                     {% for p in projects %}
                     <tr>
                         <td><strong>{{ p.name }}</strong></td>
+                        <td>
+                            {% if p.image_path %}
+                            <img src="{{ url_for('static', filename=p.image_path) }}" style="width: 50px; height: 35px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;">
+                            {% else %}
+                            <span style="font-size: 10px; color: #95a5a6;">No Image</span>
+                            {% endif %}
+                        </td>
                         <td>₹{{ "{:,.0f}".format(p.allocated_budget) }}</td>
                         <td>₹{{ "{:,.0f}".format(p.donations|sum(attribute='amount')) }}</td>
                         <td>₹{{ "{:,.0f}".format(p.expenses|sum(attribute='amount')) }}</td>
@@ -95,7 +103,7 @@
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
         <h2 id="modalTitle">Create New Initiative</h2>
-        <form id="projectForm" action="{{ url_for('main.add_project') }}" method="POST">
+        <form id="projectForm" action="{{ url_for('main.add_project') }}" method="POST" enctype="multipart/form-data">
             <div class="form-group">
                 <label>Initiative Name</label>
                 <input type="text" id="p_name" name="name" placeholder="e.g., Primary Education" required>
@@ -107,6 +115,11 @@
             <div class="form-group">
                 <label>Allocated Budget (₹)</label>
                 <input type="number" id="p_budget" name="budget" step="0.01" value="0" required>
+            </div>
+            <div class="form-group">
+                <label>Initiative Image</label>
+                <input type="file" name="image" accept="image/*">
+                <p style="font-size: 10px; color: #7f8c8d; margin-top: 5px;">Upload a cover image for the initiative cards.</p>
             </div>
             <button type="submit" class="btn btn-primary" style="width: 100%;" id="modalSubmit">Create Initiative</button>
         </form>
