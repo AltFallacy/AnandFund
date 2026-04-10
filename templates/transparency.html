@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Anandvan | Transparency & Accountability{% endblock %}
+
+{% block extra_css %}
+<style>
+    .transparency-container { max-width: 1200px; margin: 0 auto; }
+    .header { 
+        text-align: center; 
+        margin-bottom: 40px; 
+        background: linear-gradient(rgba(44, 62, 80, 0.7), rgba(44, 62, 80, 0.7)), url('/static/images/sample_3.jpg') center/cover no-repeat;
+        padding: 80px 20px;
+        border-radius: 20px;
+        color: white;
+    }
+    .header h1 { color: white; font-weight: 700; font-size: 2.5em; margin: 0; }
+    .header p { color: rgba(255,255,255,0.9); font-size: 1.1em; }
+    
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 40px; }
+    .stat-card { background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; border: 1px solid #f0f0f0; }
+    .stat-card i { font-size: 2em; color: var(--primary); margin-bottom: 15px; }
+    .stat-card .value { font-size: 1.8em; font-weight: 700; color: #34495e; margin-bottom: 5px; }
+    .stat-card .label { color: #7f8c8d; font-size: 0.95em; }
+    
+    .table-card { background: white; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); padding: 20px; overflow-x: auto; }
+    .transaction-table { width: 100%; border-collapse: collapse; }
+    .transaction-table th, .transaction-table td { padding: 18px; text-align: left; border-bottom: 1px solid #f0f0f0; }
+    .transaction-table th { background-color: #fcfcfc; color: #34495e; font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; }
+    
+    .receipt-link { 
+        background: #ebf5ee; 
+        color: var(--primary); 
+        padding: 5px 12px; 
+        border-radius: 50px; 
+        text-decoration: none; 
+        font-weight: 600; 
+        font-size: 12px;
+        transition: 0.3s;
+    }
+    .receipt-link:hover { background: var(--primary); color: white; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="transparency-container">
+    <div class="header">
+        <h1>Transparency & Accountability</h1>
+        <p>Your trust is our greatest asset. Every contribution is tracked with proof of expenditure.</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <i class="fas fa-hand-holding-usd"></i>
+            <div class="value" id="t-totalDonations">₹0</div>
+            <div class="label">Donations Received</div>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-chart-line"></i>
+            <div class="value" id="t-totalSpent">₹0</div>
+            <div class="label">Funds Invested in Causes</div>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-wallet"></i>
+            <div class="value" id="t-balance">₹0</div>
+            <div class="label">Operational Balance</div>
+        </div>
+    </div>
+
+    <div class="table-card">
+        <h3>Expenditure Registry</h3>
+        <table class="transaction-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Initiative</th>
+                    <th>Amount</th>
+                    <th>Proof</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for expense in expenses %}
+                <tr>
+                    <td>{{ expense.date.strftime('%Y-%m-%d') }}</td>
+                    <td><strong>{{ expense.title }}</strong></td>
+                    <td><span class="badge">{{ expense.project.name }}</span></td>
+                    <td>₹{{ "{:,.0f}".format(expense.amount) }}</td>
+                    <td>
+                        {% if expense.receipt_path %}
+                        <a href="/{{ expense.receipt_path }}" target="_blank" class="receipt-link">
+                            <i class="fas fa-file-invoice-dollar"></i> View Receipt
+                        </a>
+                        {% else %}
+                        <span style="color: #ccc; font-style: italic;">Verified</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    async function updateStats() {
+        try {
+            const res = await fetch('/api/totals');
+            const data = await res.json();
+            document.getElementById('t-totalDonations').innerText = '₹' + data.total_donations.toLocaleString();
+            document.getElementById('t-totalSpent').innerText = '₹' + data.total_expenses.toLocaleString();
+            document.getElementById('t-balance').innerText = '₹' + data.balance.toLocaleString();
+        } catch (e) {
+            console.error("Failed to load transparency stats", e);
+        }
+    }
+    updateStats();
+</script>
+{% endblock %}

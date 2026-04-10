@@ -5,3 +5,5 @@ Werkzeug==2.3.6
 Waitress==2.1.2
 gunicorn==22.0.0
 setuptools
+Flask-Mail==0.9.1
+python-dotenv==1.0.0

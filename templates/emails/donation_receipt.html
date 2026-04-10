@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { width: 80%; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        .header { background: #27ae60; color: white; padding: 10px; text-align: center; border-radius: 5px 5px 0 0; }
+        .receipt-info { margin: 20px 0; border-top: 2px solid #eee; padding-top: 10px; }
+        .footer { font-size: 12px; text-align: center; margin-top: 20px; color: #777; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Donation Receipt</h1>
+        </div>
+        <p>Dear {{ name }},</p>
+        <p>Thank you for your generous contribution of <strong>₹{{ amount }}</strong> to the <strong>{{ project }}</strong> initiative.</p>
+        <p>Your support helps us make a real difference in the community. You can track exactly how your funds are being used on our transparency dashboard.</p>
+        <div class="receipt-info">
+            <p><strong>Receipt Date:</strong> {{ datetime.now().strftime('%Y-%m-%d') }}</p>
+            <p><strong>Organization:</strong> Anandvan Cost & Donation Management</p>
+        </div>
+        <div class="footer">
+            &copy; 2026 Anandvan Organization | This is an automated receipt.
+        </div>
+    </div>
+</body>
+</html>

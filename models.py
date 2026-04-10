@@ -7,6 +7,7 @@ db = SQLAlchemy()
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
+    email = db.Column(db.String(150), unique=True, nullable=True) # Added email
     password = db.Column(db.String(256), nullable=False)
     role = db.Column(db.String(50), nullable=False, default='Donor') # 'Admin', 'Staff', 'Donor'
 
@@ -27,6 +28,7 @@ class Expense(db.Model):
     
     project_id = db.Column(db.Integer, db.ForeignKey('project.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) # The staff who added it
+    receipt_path = db.Column(db.String(300), nullable=True)
     user = db.relationship('User', backref='added_expenses')
 
 class Donation(db.Model):

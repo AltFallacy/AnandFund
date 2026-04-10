@@ -1,134 +1,226 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Admin Dashboard</h2>
+<div class="dashboard-container">
+    <div class="header-flex">
+        <h1>Admin Command Center</h1>
+        <div class="actions">
+            <a href="{{ url_for('main.manage_expenses') }}" class="btn btn-primary" style="background: #e67e22;">
+                <i class="fas fa-hand-holding-usd"></i> Invest Funds
+            </a>
+            <button onclick="openAddModal()" class="btn btn-primary">
+                <i class="fas fa-plus"></i> New Initiative
+            </button>
+            <a href="{{ url_for('main.export_csv') }}" class="btn btn-secondary">
+                <i class="fas fa-file-csv"></i> Export Data
+            </a>
+        </div>
+    </div>
 
-<div class="stats-container">
-    <div class="stat-card">
-        <h3>Total Budget</h3>
-        <p>₹ {{ "{:,.2f}".format(total_budget) }}</p>
+    <div class="stats-overview">
+        <div class="stat-card">
+            <i class="fas fa-wallet"></i>
+            <h3>₹{{ "{:,.0f}".format(total_budget) }}</h3>
+            <p>Allocated Budget</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-hand-holding-usd"></i>
+            <h3>₹{{ "{:,.0f}".format(total_donations) }}</h3>
+            <p>Total Donations</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-receipt"></i>
+            <h3>₹{{ "{:,.0f}".format(total_expenses) }}</h3>
+            <p>Total Expenses</p>
+        </div>
+        <div class="stat-card highlight">
+            <i class="fas fa-balance-scale"></i>
+            <h3>₹{{ "{:,.0f}".format(total_donations - total_expenses) }}</h3>
+            <p>Net Balance</p>
+        </div>
     </div>
-    <div class="stat-card">
-        <h3>Total Expenses</h3>
-        <p>₹ {{ "{:,.2f}".format(total_expenses) }}</p>
+
+    <!-- Chart Grid -->
+    <div class="charts-section">
+        <div class="card chart-container-fix">
+            <h3>Initiative Resource Distribution</h3>
+            <div class="canvas-wrapper">
+                <canvas id="financialChart"></canvas>
+            </div>
+        </div>
     </div>
-    <div class="stat-card">
-        <h3>Total Donations</h3>
-        <p>₹ {{ "{:,.2f}".format(total_donations) }}</p>
+
+    <div class="management-grid">
+        <div class="card">
+            <h3>Active Initiatives</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Budgeted</th>
+                        <th>Raised</th>
+                        <th>Spent</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in projects %}
+                    <tr>
+                        <td><strong>{{ p.name }}</strong></td>
+                        <td>₹{{ "{:,.0f}".format(p.allocated_budget) }}</td>
+                        <td>₹{{ "{:,.0f}".format(p.donations|sum(attribute='amount')) }}</td>
+                        <td>₹{{ "{:,.0f}".format(p.expenses|sum(attribute='amount')) }}</td>
+                        <td>
+                            <button class="btn btn-sm" style="background: #f39c12; color: white;" 
+                                    onclick="openEditModal({{ p.id }}, '{{ p.name }}', '{{ p.description | replace('\'' , '\\\'') }}', {{ p.allocated_budget }})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3>Management Note</h3>
+            <p>When you record an "Expense" against an initiative, it shows the public that the funds have been <strong>Invested</strong> into the cause.</p>
+            <p style="color: #7f8c8d; font-size: 0.9em; margin-top: 15px;">Use the 'Transparency' link to view all verified receipts.</p>
+        </div>
     </div>
 </div>
 
-<div class="card">
-    <div style="width: 50%; margin: auto;">
-        <canvas id="financialChart" 
-            data-budget="{{ total_budget }}" 
-            data-expenses="{{ total_expenses }}" 
-            data-donations="{{ total_donations }}">
-        </canvas>
+<!-- Add/Edit Project Modal -->
+<div id="projectModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2 id="modalTitle">Create New Initiative</h2>
+        <form id="projectForm" action="{{ url_for('main.add_project') }}" method="POST">
+            <div class="form-group">
+                <label>Initiative Name</label>
+                <input type="text" id="p_name" name="name" placeholder="e.g., Primary Education" required>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="p_desc" name="description" placeholder="Short summary for the homepage..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Allocated Budget (₹)</label>
+                <input type="number" id="p_budget" name="budget" step="0.01" value="0" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;" id="modalSubmit">Create Initiative</button>
+        </form>
     </div>
-</div>
-
-<div class="card">
-    <h3>Add New Project / Department</h3>
-    <form action="{{ url_for('main.add_project') }}" method="POST">
-        <div class="form-group">
-            <label>Project Name</label>
-            <input type="text" name="name" required>
-        </div>
-        <div class="form-group">
-            <label>Description</label>
-            <input type="text" name="description">
-        </div>
-        <div class="form-group">
-            <label>Allocated Budget (₹)</label>
-            <input type="number" step="0.01" name="budget" required>
-        </div>
-        <button type="submit">Add Project</button>
-    </form>
-</div>
-
-<div class="card">
-    <h3>Existing Projects</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Budget (₹)</th>
-                <th>Expenses (₹)</th>
-                <th>Donations (₹)</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for project in projects %}
-            <tr>
-                <td>{{ project.id }}</td>
-                <td>{{ project.name }}</td>
-                <td>{{ "{:,.2f}".format(project.allocated_budget) }}</td>
-                <td>{{ "{:,.2f}".format(project.expenses|sum(attribute='amount')) }}</td>
-                <td>{{ "{:,.2f}".format(project.donations|sum(attribute='amount')) }}</td>
-            </tr>
-            {% endfor %}
-            {% if not projects %}
-            <tr>
-                <td colspan="5">No projects found.</td>
-            </tr>
-            {% endif %}
-        </tbody>
-    </table>
-</div>
-
-<div class="card">
-    <h3>Add New User</h3>
-    <form action="{{ url_for('main.add_user') }}" method="POST">
-        <div class="form-group">
-            <label>Username</label>
-            <input type="text" name="username" required>
-        </div>
-        <div class="form-group">
-            <label>Password</label>
-            <input type="password" name="password" required>
-        </div>
-        <div class="form-group">
-            <label>Role</label>
-            <select name="role">
-                <option value="Staff">Staff</option>
-                <option value="Donor">Donor</option>
-                <option value="Admin">Admin</option>
-            </select>
-        </div>
-        <button type="submit">Create User</button>
-    </form>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const canvas = document.getElementById('financialChart');
-    const b = parseFloat(canvas.dataset.budget) || 0;
-    const e = parseFloat(canvas.dataset.expenses) || 0;
-    const d = parseFloat(canvas.dataset.donations) || 0;
+    // Modal Logic
+    const modal = document.getElementById('projectModal');
+    const form = document.getElementById('projectForm');
+    const mTitle = document.getElementById('modalTitle');
+    const mSubmit = document.getElementById('modalSubmit');
 
-    const ctx = canvas.getContext('2d');
-    const myChart = new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: ['Total Budget', 'Total Expenses', 'Total Donations'],
-            datasets: [{
-                label: 'Financials (₹)',
-                data: [b, e, d],
-                backgroundColor: [
-                    'rgba(54, 162, 235, 0.6)',
-                    'rgba(255, 99, 132, 0.6)',
-                    'rgba(75, 192, 192, 0.6)'
-                ],
-                borderColor: [
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(75, 192, 192, 1)'
-                ],
-                borderWidth: 1
-            }]
-        }
-    });
+    function openAddModal() {
+        form.action = "{{ url_for('main.add_project') }}";
+        mTitle.innerText = "Create New Initiative";
+        mSubmit.innerText = "Create Initiative";
+        document.getElementById('p_name').value = '';
+        document.getElementById('p_desc').value = '';
+        document.getElementById('p_budget').value = '0';
+        modal.style.display = 'block';
+    }
+
+    function openEditModal(id, name, desc, budget) {
+        form.action = "/admin/edit_project/" + id;
+        mTitle.innerText = "Update Initiative";
+        mSubmit.innerText = "Save Changes";
+        document.getElementById('p_name').value = name;
+        document.getElementById('p_desc').value = desc;
+        document.getElementById('p_budget').value = budget;
+        modal.style.display = 'block';
+    }
+
+    function closeModal() {
+        modal.style.display = 'none';
+    }
+
+    // Chart.js Logic
+    const ctx = document.getElementById('financialChart').getContext('2d');
+    const chartData = {{ chart_data | tojson if chart_data else 'null' }};
+    
+    if (chartData && chartData.labels.length > 0) {
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: chartData.labels,
+                datasets: [
+                    {
+                        label: 'Budgeted',
+                        data: chartData.budgets,
+                        backgroundColor: 'rgba(52, 152, 219, 0.7)'
+                    },
+                    {
+                        label: 'Raised',
+                        data: chartData.donations,
+                        backgroundColor: 'rgba(39, 174, 96, 0.7)'
+                    },
+                    {
+                        label: 'Spent',
+                        data: chartData.expenses,
+                        backgroundColor: 'rgba(231, 76, 60, 0.7)'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { 
+                        beginAtZero: true,
+                        ticks: { color: '#7f8c8d' }
+                    },
+                    x: {
+                        ticks: { color: '#7f8c8d' }
+                    }
+                },
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    }
+
+    // Close modal on click outside
+    window.onclick = function(event) {
+        if (event.target == modal) closeModal();
+    }
 </script>
+
+<style>
+    .dashboard-container { padding: 20px; }
+    .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 20px; }
+    .stats-overview { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    .stat-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    .stat-card.highlight { background: #27ae60; color: white; }
+    .stat-card i { font-size: 1.5em; margin-bottom: 10px; color: #27ae60; }
+    .stat-card.highlight i { color: white; }
+    
+    .charts-section { margin-bottom: 30px; }
+    .canvas-wrapper { position: relative; height: 350px; width: 100%; }
+    
+    .management-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
+    @media (max-width: 900px) { .management-grid { grid-template-columns: 1fr; } }
+    
+    .data-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    .data-table th, .data-table td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+    .btn-sm { padding: 5px 10px; font-size: 12px; }
+    
+    .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+    .modal-content { background: white; margin: 10% auto; padding: 30px; border-radius: 15px; width: 90%; max-width: 500px; position: relative; }
+    .close { position: absolute; right: 20px; top: 15px; font-size: 24px; cursor: pointer; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
+    .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
+</style>
 {% endblock %}
