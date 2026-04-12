@@ -1,103 +1,329 @@
 {% extends "base.html" %}
 
-{% block title %}Record Expenses | Staff Portal{% endblock %}
+{% block title %}Record Investments | Staff Portal — Anandvan{% endblock %}
 
 {% block extra_css %}
 <style>
-    .expenses-container { max-width: 1000px; margin: 0 auto; }
-    .grid-exp { display: grid; grid-template-columns: 1fr 2fr; gap: 30px; }
-    @media (max-width: 900px) { .grid-exp { grid-template-columns: 1fr; } }
-    
-    .form-card { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-    .table-card { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow-x: auto; }
-    
-    .form-group { margin-bottom: 20px; }
-    .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--secondary); }
-    .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
-    .file-input-wrapper { border: 2px dashed #ddd; padding: 20px; text-align: center; border-radius: 10px; cursor: pointer; transition: 0.3s; }
-    .file-input-wrapper:hover { border-color: var(--primary); background: #f9fffb; }
-    
-    .expense-table { width: 100%; border-collapse: collapse; }
-    .expense-table th, .expense-table td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
-    .expense-table th { color: #7f8c8d; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
-    
-    .receipt-badge { background: #e8f5e9; color: #2e7d32; padding: 4px 10px; border-radius: 50px; font-size: 11px; font-weight: 600; text-decoration: none; }
+:root {
+    --primary: #2ecc71;
+    --bg-card: rgba(22,27,34,0.9);
+    --border: rgba(255,255,255,0.08);
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --surface: #161b22;
+}
+
+.expenses-container { max-width: 1100px; margin: 0 auto; padding: 10px 30px 40px; }
+
+.page-header {
+    margin-bottom: 35px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid var(--border);
+}
+.page-header h1 { font-size: 1.8em; font-weight: 800; color: var(--text); margin-bottom: 5px; }
+.page-header p { color: var(--muted); font-size: 0.9em; }
+
+.grid-exp {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 25px;
+    align-items: start;
+}
+@media (max-width: 900px) { .grid-exp { grid-template-columns: 1fr; } }
+
+/* Form Card */
+.form-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 30px;
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 90px;
+}
+.form-card h3 {
+    font-size: 1em;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 5px;
+    display: flex; align-items: center; gap: 10px;
+}
+.form-card h3 i { color: var(--primary); }
+.form-card .sub { color: var(--muted); font-size: 0.82em; margin-bottom: 28px; }
+
+.form-group { margin-bottom: 20px; }
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--muted);
+    font-size: 0.78em;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 12px 15px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 0.9em;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.25s, box-shadow 0.25s;
+}
+.form-group input::placeholder { color: rgba(139,148,158,0.45); }
+.form-group input:focus, .form-group select:focus {
+    border-color: rgba(46,204,113,0.45);
+    box-shadow: 0 0 0 3px rgba(46,204,113,0.08);
+}
+.form-group select { cursor: pointer; }
+.form-group select option { background: #1a2230; }
+
+.file-drop {
+    border: 2px dashed rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 25px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: var(--muted);
+}
+.file-drop:hover {
+    border-color: rgba(46,204,113,0.4);
+    background: rgba(46,204,113,0.04);
+    color: var(--primary);
+}
+.file-drop i { font-size: 2em; margin-bottom: 10px; display: block; }
+.file-drop p { font-size: 0.82em; }
+.file-drop small { font-size: 0.75em; opacity: 0.6; }
+
+.btn-submit {
+    width: 100%;
+    padding: 14px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95em;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.3s;
+    box-shadow: 0 6px 20px rgba(46,204,113,0.3);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    margin-top: 8px;
+}
+.btn-submit:hover {
+    background: #2ecc71;
+    box-shadow: 0 10px 28px rgba(46,204,113,0.45);
+    transform: translateY(-2px);
+}
+
+/* Table Card */
+.table-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    backdrop-filter: blur(10px);
+    overflow-x: auto;
+}
+.table-card h3 {
+    font-size: 1em;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 22px;
+    display: flex; align-items: center; gap: 10px;
+}
+.table-card h3 i { color: var(--primary); }
+
+.expense-table { width: 100%; border-collapse: collapse; }
+.expense-table thead tr { border-bottom: 1px solid var(--border); }
+.expense-table th {
+    padding: 12px 16px;
+    text-align: left;
+    color: var(--muted);
+    font-size: 0.75em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.expense-table td {
+    padding: 15px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--text);
+    font-size: 0.88em;
+    vertical-align: middle;
+}
+.expense-table tr:last-child td { border-bottom: none; }
+.expense-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+.amount-cell { color: #e74c3c; font-weight: 700; }
+.project-pill {
+    background: rgba(46,204,113,0.1);
+    border: 1px solid rgba(46,204,113,0.2);
+    color: var(--primary);
+    padding: 4px 10px;
+    border-radius: 50px;
+    font-size: 0.78em;
+    font-weight: 600;
+}
+.receipt-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(46,204,113,0.1);
+    border: 1px solid rgba(46,204,113,0.2);
+    color: var(--primary);
+    padding: 5px 12px;
+    border-radius: 50px;
+    font-size: 0.78em;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.receipt-badge:hover { background: var(--primary); color: white; border-color: var(--primary); }
+.no-receipt { color: var(--muted); font-size: 0.8em; font-style: italic; }
+
+.date-cell { color: var(--muted); font-size: 0.82em; }
+.empty-state {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--muted);
+}
+.empty-state i { font-size: 2.5em; margin-bottom: 15px; display: block; opacity: 0.4; }
+.empty-state p { font-size: 0.9em; }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="expenses-container">
-    <h1 style="margin-bottom: 30px; font-weight: 700;">Financial Reporting</h1>
-    
+
+    <div class="page-header">
+        <h1><i class="fas fa-file-invoice-dollar" style="color:var(--primary);margin-right:10px;"></i>Financial Reporting</h1>
+        <p>Record and track all fund investments with verified proof of expenditure</p>
+    </div>
+
     <div class="grid-exp">
+        <!-- Left: Form -->
         <div class="form-card">
-            <h3>Record New Investment</h3>
-            <p style="color: #7f8c8d; font-size: 0.9em; margin-bottom: 25px;">Provide proof for funds utilized.</p>
-            
-            <form action="{{ url_for('main.manage_expenses') }}" method="POST" enctype="multipart/form-data">
+            <h3><i class="fas fa-plus-circle"></i> Record New Investment</h3>
+            <p class="sub">Provide complete details and upload a receipt for full transparency.</p>
+
+            <form action="{{ url_for('main.manage_expenses') }}" method="POST" enctype="multipart/form-data" id="expenseForm">
                 <div class="form-group">
-                    <label>Select Initiative</label>
-                    <select name="project_id" required>
+                    <label>Initiative</label>
+                    <select name="project_id" required id="projSelect">
+                        <option value="" disabled selected>Select an initiative...</option>
                         {% for p in projects %}
                         <option value="{{ p.id }}">{{ p.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
-                
+
                 <div class="form-group">
-                    <label>Description (What was bought?)</label>
-                    <input type="text" name="title" placeholder="e.g., 50 Medicine Kits" required>
+                    <label>Description</label>
+                    <input type="text" name="title" placeholder="e.g., 50 Water Filter Units" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Amount (₹)</label>
-                    <input type="number" name="amount" step="0.01" placeholder="0.00" required>
+                    <input type="number" name="amount" step="0.01" min="0.01" placeholder="0.00" required>
                 </div>
-                
+
                 <div class="form-group">
-                    <label>Proof of Expenditure (Receipt)</label>
-                    <div class="file-input-wrapper" onclick="document.getElementById('receipt-upload').click()">
-                        <i class="fas fa-cloud-upload-alt" style="font-size: 2em; color: var(--primary); margin-bottom: 10px;"></i>
-                        <p id="file-name" style="font-size: 0.9em; color: #7f8c8d;">Click to upload image/PDF</p>
-                        <input type="file" id="receipt-upload" name="receipt" hidden onchange="document.getElementById('file-name').innerText = this.files[0].name">
+                    <label>Proof of Expenditure</label>
+                    <div class="file-drop" onclick="document.getElementById('receipt-upload').click()" id="dropZone">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p id="file-name">Click to upload receipt</p>
+                        <small>JPG, PNG, PDF accepted</small>
                     </div>
+                    <input type="file" id="receipt-upload" name="receipt" hidden
+                           onchange="document.getElementById('file-name').innerText = this.files[0]?.name || 'Click to upload receipt'">
                 </div>
-                
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Records</button>
+
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    <i class="fas fa-check-circle"></i> Submit Investment Record
+                </button>
             </form>
         </div>
-        
+
+        <!-- Right: Table -->
         <div class="table-card">
-            <h3>Recent Records</h3>
+            <h3><i class="fas fa-history"></i> Recent Investment Records</h3>
             <table class="expense-table">
                 <thead>
                     <tr>
                         <th>Date</th>
-                        <th>Project</th>
+                        <th>Initiative</th>
                         <th>Description</th>
                         <th>Amount</th>
-                        <th>Proof</th>
+                        <th>Receipt</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for exp in expenses %}
                     <tr>
-                        <td>{{ exp.date.strftime('%Y-%m-%d') }}</td>
-                        <td><strong>{{ exp.project.name }}</strong></td>
+                        <td class="date-cell">{{ exp.date.strftime('%d %b %Y') }}</td>
+                        <td><span class="project-pill">{{ exp.project.name }}</span></td>
                         <td>{{ exp.title }}</td>
-                        <td>₹{{ "{:,.0f}".format(exp.amount) }}</td>
+                        <td class="amount-cell">₹{{ "{:,.0f}".format(exp.amount) }}</td>
                         <td>
                             {% if exp.receipt_path %}
-                            <a href="/{{ exp.receipt_path }}" target="_blank" class="receipt-badge">View Receipt</a>
+                            <a href="/{{ exp.receipt_path }}" target="_blank" class="receipt-badge">
+                                <i class="fas fa-file-invoice-dollar"></i> View
+                            </a>
                             {% else %}
-                            <span style="color: #ccc;">No Receipt</span>
+                            <span class="no-receipt">No receipt</span>
                             {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
+                    {% if not expenses %}
+                    <tr>
+                        <td colspan="5">
+                            <div class="empty-state">
+                                <i class="fas fa-inbox"></i>
+                                <p>No records yet. Submit your first investment above.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endif %}
                 </tbody>
             </table>
         </div>
     </div>
+
 </div>
+
+<script>
+    document.getElementById('expenseForm').addEventListener('submit', function() {
+        const btn = document.getElementById('submitBtn');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+        btn.disabled = true;
+    });
+
+    // Drag & Drop for receipt
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('receipt-upload');
+
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.style.borderColor = 'rgba(46,204,113,0.6)';
+        dropZone.style.background = 'rgba(46,204,113,0.06)';
+    });
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.style.borderColor = '';
+        dropZone.style.background = '';
+    });
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.style.borderColor = '';
+        dropZone.style.background = '';
+        if (e.dataTransfer.files.length) {
+            fileInput.files = e.dataTransfer.files;
+            document.getElementById('file-name').innerText = e.dataTransfer.files[0].name;
+        }
+    });
+</script>
 {% endblock %}

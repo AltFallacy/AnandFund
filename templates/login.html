@@ -3,84 +3,313 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Login to Anandvan Staff & Admin Portal">
     <title>Login | Anandvan</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css">
     <style>
-        body { 
-            font-family: 'Poppins', sans-serif; 
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://source.unsplash.com/1600x900/?education,kids');
-            background-size: cover;
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            margin: 0; 
+        :root {
+            --primary: #2ecc71;
+            --primary-dark: #27ae60;
+            --bg: #0d1117;
+            --surface: #161b22;
+            --border: rgba(255,255,255,0.08);
+            --text: #e6edf3;
+            --muted: #8b949e;
         }
-        .login-card { 
-            background: rgba(255, 255, 255, 0.95); 
-            backdrop-filter: blur(10px);
-            padding: 50px; 
-            border-radius: 20px; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2); 
-            width: 100%; 
-            max-width: 400px; 
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg);
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        /* Left decorative panel */
+        .login-panel-left {
+            background: linear-gradient(145deg, #0a1f14 0%, #0d2a1b 50%, #072011 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 50px;
+            position: relative;
+            overflow: hidden;
+        }
+        .login-panel-left::before {
+            content: '';
+            position: absolute;
+            top: -100px; right: -100px;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(46,204,113,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .login-panel-left::after {
+            content: '';
+            position: absolute;
+            bottom: -150px; left: -100px;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(26,188,156,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .brand-mark {
+            text-align: center;
+            z-index: 1;
+        }
+        .brand-icon {
+            width: 72px; height: 72px;
+            background: linear-gradient(135deg, #2ecc71, #1abc9c);
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2em; color: white;
+            margin: 0 auto 25px;
+            box-shadow: 0 15px 40px rgba(46,204,113,0.35);
+        }
+        .brand-mark h1 {
+            font-size: 2.2em;
+            font-weight: 900;
+            color: white;
+            letter-spacing: 2px;
+        }
+        .brand-mark h1 span { color: var(--primary); }
+        .brand-mark p {
+            color: rgba(255,255,255,0.45);
+            font-size: 0.9em;
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+
+        .trust-items {
+            margin-top: 50px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            z-index: 1;
+            width: 100%;
+            max-width: 320px;
+        }
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: rgba(255,255,255,0.55);
+            font-size: 0.88em;
+        }
+        .trust-item-icon {
+            width: 38px; height: 38px;
+            background: rgba(46,204,113,0.1);
+            border: 1px solid rgba(46,204,113,0.2);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        /* Right form panel */
+        .login-panel-right {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 50px;
+            background: var(--bg);
+        }
+
+        .login-form-wrapper {
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .form-header { margin-bottom: 40px; }
+        .form-header h2 {
+            font-size: 1.9em;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        .form-header p { color: var(--muted); font-size: 0.9em; }
+
+        .form-group { margin-bottom: 22px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--muted);
+            font-size: 0.82em;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .input-wrapper {
+            position: relative;
+        }
+        .input-wrapper i {
+            position: absolute;
+            left: 16px; top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted);
+            font-size: 0.9em;
+            pointer-events: none;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px 14px 44px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 0.95em;
+            font-family: inherit;
+            transition: border-color 0.25s, box-shadow 0.25s;
+            outline: none;
+        }
+        .form-group input::placeholder { color: rgba(139,148,158,0.5); }
+        .form-group input:focus {
+            border-color: rgba(46,204,113,0.5);
+            box-shadow: 0 0 0 3px rgba(46,204,113,0.1);
+            background: #1a2230;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95em;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+            box-shadow: 0 6px 20px rgba(46,204,113,0.35);
+            margin-top: 10px;
+        }
+        .btn-login:hover {
+            background: #2ecc71;
+            box-shadow: 0 10px 28px rgba(46,204,113,0.5);
+            transform: translateY(-2px);
+        }
+
+        .links {
+            margin-top: 30px;
             text-align: center;
         }
-        .login-card h2 { color: #2c3e50; font-size: 2em; margin-bottom: 30px; }
-        .form-group { text-align: left; margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; color: #34495e; font-weight: 500; }
-        .form-group input { 
-            width: 100%; 
-            padding: 12px; 
-            border: 1px solid #ddd; 
-            border-radius: 8px; 
-            box-sizing: border-box; 
-            font-size: 16px;
+        .links a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.88em;
+            font-weight: 500;
+            transition: opacity 0.2s;
         }
-        .btn { 
-            width: 100%; 
-            padding: 15px; 
-            background: #27ae60; 
-            color: white; 
-            border: none; 
-            border-radius: 8px; 
-            font-size: 16px; 
-            font-weight: 600;
-            cursor: pointer; 
-            transition: 0.3s; 
+        .links a:hover { opacity: 0.8; text-decoration: underline; }
+        .links p { color: var(--muted); font-size: 0.88em; margin-bottom: 8px; }
+
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 25px 0;
         }
-        .btn:hover { background: #219150; transform: translateY(-2px); }
-        .links { margin-top: 25px; color: #7f8c8d; }
-        .links a { color: #27ae60; text-decoration: none; font-weight: 500; }
-        .flash { color: #e74c3c; background: #fdf2f2; padding: 10px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; }
+
+        /* Flash messages */
+        .flash {
+            background: rgba(231,76,60,0.1);
+            border: 1px solid rgba(231,76,60,0.25);
+            color: #eb7e72;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 22px;
+            font-size: 0.88em;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body { grid-template-columns: 1fr; }
+            .login-panel-left { display: none; }
+            .login-panel-right { padding: 50px 30px; }
+        }
     </style>
 </head>
 <body>
-    <div class="login-card">
-        <h2>Welcome Back</h2>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="flash">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        <form method="POST">
-            <div class="form-group">
-                <label>Username</label>
-                <input type="text" name="username" placeholder="Enter your username" required>
+    <!-- Left Brand Panel -->
+    <div class="login-panel-left">
+        <div class="brand-mark">
+            <div class="brand-icon"><i class="fas fa-leaf"></i></div>
+            <h1><span>Anand</span>van</h1>
+            <p>A transparent platform for social<br>impact — every rupee verified.</p>
+        </div>
+
+        <div class="trust-items">
+            <div class="trust-item">
+                <div class="trust-item-icon"><i class="fas fa-shield-alt"></i></div>
+                <span>Secure, role-based access for Admin, Staff & Donors</span>
             </div>
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" name="password" placeholder="Enter your password" required>
+            <div class="trust-item">
+                <div class="trust-item-icon"><i class="fas fa-chart-bar"></i></div>
+                <span>Real-time financial dashboards with full audit trail</span>
             </div>
-            <button type="submit" class="btn">Login to Dashboard</button>
-        </form>
-        <div class="links">
-            <p>New here? <a href="{{ url_for('main.register') }}">Create an Account</a></p>
-            <p><a href="{{ url_for('main.index') }}"><i class="fas fa-arrow-left"></i> Back to Home</a></p>
+            <div class="trust-item">
+                <div class="trust-item-icon"><i class="fas fa-receipt"></i></div>
+                <span>Receipt-backed expense tracking for every initiative</span>
+            </div>
         </div>
     </div>
+
+    <!-- Right Form Panel -->
+    <div class="login-panel-right">
+        <div class="login-form-wrapper">
+            <div class="form-header">
+                <h2>Welcome back 👋</h2>
+                <p>Sign in to your Anandvan portal</p>
+            </div>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="flash"><i class="fas fa-exclamation-circle"></i> {{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" id="loginForm">
+                <div class="form-group">
+                    <label>Username</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user"></i>
+                        <input type="text" name="username" id="username" placeholder="Enter your username" required autocomplete="username">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" name="password" id="password" placeholder="Enter your password" required autocomplete="current-password">
+                    </div>
+                </div>
+                <button type="submit" class="btn-login" id="loginBtn">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+            </form>
+
+            <div class="divider"></div>
+
+            <div class="links">
+                <p>New to Anandvan? <a href="{{ url_for('main.register') }}">Create an account</a></p>
+                <p style="margin-top: 10px;"><a href="{{ url_for('main.index') }}"><i class="fas fa-arrow-left"></i> Back to Home</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function() {
+            const btn = document.getElementById('loginBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
+            btn.disabled = true;
+        });
+    </script>
 </body>
 </html>

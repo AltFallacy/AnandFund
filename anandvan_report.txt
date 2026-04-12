@@ -1,0 +1,46 @@
+ANANDVAN COST & DONATION MANAGEMENT SYSTEM - PROJECT REPORT
+
+1. PROBLEM STATEMENT
+Objective: To transition Anandvan from fragmented tracking methods to a centralized, web-based platform that streamlines budget allocation, expense monitoring, and donation tracking.
+
+The Challenge:
+- Lack of Centralization: Information across multiple initiatives was siloed, making it hard to get a holistic financial view.
+- Transparency Gaps: Donors lacked real-time visibility into how their funds were being utilized.
+- Inefficiency: Manual tracking delayed financial reporting and complicated decision-making for leadership.
+
+---
+
+2. THE SOLUTION: A UNIFIED MANAGEMENT ECOSYSTEM
+The developed platform addresses these challenges through three primary pillars: Structure, Evidence, and Visibility.
+
+A. Centralized Budget & Initiative Management
+- Administrative Command Center: Admins can create and edit specific initiatives, allocating dedicated budgets for each.
+- Visual Personalization: Initiatives can now be assigned custom cover images, making the platform more engaging for potential supporters.
+
+B. Transparent Expense Tracking (Evidence-Based)
+- Accountability: Staff members record expenses against specific initiatives.
+- Receipt Verification: Every recorded expense can include a digital receipt upload, ensuring that every rupee spent is verifiable through "Proof of Expenditure."
+
+C. Real-Time Donation Mapping
+- Instant Allocation: Donations are linked directly to initiatives, allowing for real-time calculation of "Fund Availability" vs. "Budget Needed."
+- Live Impact Statistics: The homepage features a live counter showing total funds raised globally, providing immediate social proof and motivation for donors.
+
+---
+
+3. KEY FUNCTIONAL RESULTS
+
+Feature                          | Problem Solved
+---------------------------------------------------------------------------------
+Role-Based Access                | Ensures data integrity by separating Admin, Staff, and Donor functions.
+Financial Transparency Report    | A public-facing ledger that shows every expense and its associated proof.
+CSV Export                       | Allows for traditional accounting audits and off-line data analysis.
+Automated Financial Charts       | Visualizes resource distribution (Budget vs. Raising vs. Spent).
+
+---
+
+4. IMPACT ON DECISION-MAKING
+By digitizing these workflows, Anandvan leadership can now identify which initiatives are underfunded or over-budget in a single glance. More importantly, the system builds profound trust with donors by proving that their contributions are being "invested" directly into verified social causes.
+
+Technology Stack: Flask, SQLAlchemy, CSV, Image/Receipt Handling.
+Report Date: 2026-04-10
+---------------------------------------------------------------------------------

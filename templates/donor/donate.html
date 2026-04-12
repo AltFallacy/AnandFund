@@ -1,152 +1,328 @@
 {% extends "base.html" %}
 
-{% block title %}Anandvan | Support Our Cause{% endblock %}
+{% block title %}Donate | Support Anandvan's Mission{% endblock %}
 
 {% block extra_css %}
 <style>
-    /* Interactive Background Styling */
+    /* Video bg */
     .video-background {
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
         z-index: -100;
         overflow: hidden;
     }
     #bgVideo {
-        width: 100%;
-        height: 100%;
+        width: 100%; height: 100%;
         object-fit: cover;
-        filter: brightness(0.3);
+        filter: brightness(0.25) saturate(1.3);
     }
-    
-    /* Override base padding for hero-like feel */
-    .main-content { padding-top: 0 !important; }
+    .main-content { padding-top: 0 !important; padding-bottom: 0 !important; }
 
+    /* Page layout */
     .donation-page {
         min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 100px 20px;
+        padding: 80px 20px 60px;
     }
 
-    .glass-form-card {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(20px);
-        padding: 50px;
-        border-radius: 24px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        max-width: 650px;
+    .donate-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        max-width: 1000px;
         width: 100%;
-        color: white;
-        box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        align-items: center;
     }
 
-    .glass-form-card h1 { font-size: 2.5em; font-weight: 800; margin-bottom: 10px; text-align: center; }
-    .glass-form-card p.subtitle { text-align: center; color: rgba(255,255,255,0.7); margin-bottom: 40px; }
+    @media (max-width: 800px) {
+        .donate-layout { grid-template-columns: 1fr; }
+        .donate-left { display: none; }
+    }
 
-    .form-group { margin-bottom: 25px; }
-    .form-group label { display: block; margin-bottom: 10px; font-weight: 500; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px; }
-    
+    /* Left info panel */
+    .donate-left {
+        color: white;
+    }
+    .donate-left .eyebrow {
+        font-size: 0.72em;
+        letter-spacing: 3px;
+        color: var(--primary);
+        text-transform: uppercase;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+    .donate-left h1 {
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 900;
+        line-height: 1.15;
+        margin-bottom: 20px;
+        color: white;
+    }
+    .donate-left h1 span { color: var(--primary); }
+    .donate-left p {
+        color: rgba(255,255,255,0.55);
+        font-size: 0.95em;
+        line-height: 1.75;
+        margin-bottom: 35px;
+    }
+
+    .impact-items {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .impact-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        color: rgba(255,255,255,0.6);
+        font-size: 0.88em;
+    }
+    .impact-icon {
+        width: 40px; height: 40px;
+        background: rgba(46,204,113,0.1);
+        border: 1px solid rgba(46,204,113,0.2);
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--primary);
+        flex-shrink: 0;
+    }
+
+    /* Glass form card */
+    .glass-form-card {
+        background: rgba(13, 17, 23, 0.6);
+        backdrop-filter: blur(30px) saturate(180%);
+        padding: 45px 40px;
+        border-radius: 24px;
+        border: 1px solid rgba(255,255,255,0.1);
+        box-shadow: 0 30px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+        color: white;
+    }
+
+    .glass-form-card h2 {
+        font-size: 1.5em;
+        font-weight: 800;
+        margin-bottom: 5px;
+        color: white;
+    }
+    .glass-form-card .subtitle {
+        color: rgba(255,255,255,0.45);
+        font-size: 0.85em;
+        margin-bottom: 35px;
+    }
+
+    /* Amount quick-select */
+    .amount-presets {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+    .preset-btn {
+        padding: 10px 5px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 8px;
+        color: rgba(255,255,255,0.7);
+        font-size: 0.82em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: inherit;
+    }
+    .preset-btn:hover, .preset-btn.active {
+        border-color: var(--primary);
+        background: rgba(46,204,113,0.15);
+        color: var(--primary);
+    }
+
+    .form-group { margin-bottom: 20px; }
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 0.78em;
+        font-weight: 600;
+        color: rgba(255,255,255,0.45);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    @media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
+
     .form-group input, .form-group select {
         width: 100%;
-        padding: 15px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 12px;
+        padding: 14px 15px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 10px;
         color: white;
-        font-size: 16px;
-        transition: 0.3s;
-    }
-    .form-group input:focus, .form-group select:focus {
-        background: rgba(255, 255, 255, 0.1);
-        border-color: var(--primary);
+        font-size: 0.9em;
+        font-family: inherit;
+        transition: all 0.25s;
         outline: none;
     }
-    
-    .form-group select option { background: #2c3e50; color: white; }
+    .form-group input::placeholder { color: rgba(255,255,255,0.3); }
+    .form-group input:focus, .form-group select:focus {
+        background: rgba(255,255,255,0.1);
+        border-color: rgba(46,204,113,0.5);
+        box-shadow: 0 0 0 3px rgba(46,204,113,0.1);
+    }
+    .form-group select option { background: #1a2230; color: white; }
 
     .donate-btn {
         width: 100%;
-        background: var(--primary);
+        background: linear-gradient(135deg, #2ecc71, #1abc9c);
         color: white;
-        padding: 18px;
+        padding: 16px;
         border: none;
         border-radius: 50px;
-        font-size: 1.1em;
-        font-weight: 700;
+        font-size: 1em;
+        font-weight: 800;
         cursor: pointer;
-        transition: 0.4s;
+        transition: all 0.4s;
         text-transform: uppercase;
         letter-spacing: 2px;
-        margin-top: 20px;
+        margin-top: 15px;
+        font-family: inherit;
+        box-shadow: 0 10px 30px rgba(46,204,113,0.35);
+        display: flex; align-items: center; justify-content: center; gap: 10px;
     }
-    .donate-btn:hover { 
-        transform: scale(1.02);
-        box-shadow: 0 10px 25px rgba(39, 174, 96, 0.4);
-        background: #2ecc71;
+    .donate-btn:hover {
+        transform: translateY(-3px) scale(1.01);
+        box-shadow: 0 15px 40px rgba(46,204,113,0.5);
+    }
+
+    .security-note {
+        text-align: center;
+        font-size: 0.75em;
+        color: rgba(255,255,255,0.3);
+        margin-top: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="video-background">
-    <video id="bgVideo" muted playsinline preload="auto">
+    <video id="bgVideo" muted playsinline preload="auto" autoplay loop>
         <source src="{{ url_for('static', filename='videos/vid_CEP.mp4') }}" type="video/mp4">
     </video>
 </div>
 
 <div class="donation-page">
-    <div class="glass-form-card">
-        <h1>Transform a Life</h1>
-        <p class="subtitle">Your contribution directly fuels our verified social initiatives.</p>
-        
-        <form action="{{ url_for('main.donate') }}" method="POST">
-            <div class="form-group">
-                <label>Contributor Name</label>
-                <input type="text" name="donor_name" value="{{ current_user.username if current_user.is_authenticated else '' }}" placeholder="Name or Organization" required>
-            </div>
-            
-            <div class="form-group">
-                <label>Email Address</label>
-                <input type="email" name="email" placeholder="for receipt delivery" required>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div class="form-group">
-                    <label>Amount (₹)</label>
-                    <input type="number" step="0.01" name="amount" min="1" placeholder="500.00" required>
+    <div class="donate-layout">
+
+        <!-- Left Panel -->
+        <div class="donate-left">
+            <p class="eyebrow">Make A Difference</p>
+            <h1>Support <span>verified</span><br>social change</h1>
+            <p>Every rupee you donate is tracked from receipt to verified expense. No hidden costs, no ambiguity — just transparent impact.</p>
+
+            <div class="impact-items">
+                <div class="impact-item">
+                    <div class="impact-icon"><i class="fas fa-receipt"></i></div>
+                    <span>Instant email receipt delivered to your inbox</span>
                 </div>
-                
+                <div class="impact-item">
+                    <div class="impact-icon"><i class="fas fa-eye"></i></div>
+                    <span>Track your donation on our live transparency dashboard</span>
+                </div>
+                <div class="impact-item">
+                    <div class="impact-icon"><i class="fas fa-shield-alt"></i></div>
+                    <span>Funds are allocated to verified initiatives only</span>
+                </div>
+                <div class="impact-item">
+                    <div class="impact-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                    <span>Proof of expenditure available publicly for every expense</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Form -->
+        <div class="glass-form-card">
+            <h2>Make a Donation</h2>
+            <p class="subtitle">Your contribution directly fuels our verified social initiatives</p>
+
+            <form action="{{ url_for('main.donate') }}" method="POST" id="donateForm">
+                <div class="form-group">
+                    <label>Quick Amount (₹)</label>
+                    <div class="amount-presets">
+                        <button type="button" class="preset-btn" data-amount="500">₹500</button>
+                        <button type="button" class="preset-btn" data-amount="1000">₹1K</button>
+                        <button type="button" class="preset-btn" data-amount="2500">₹2.5K</button>
+                        <button type="button" class="preset-btn" data-amount="5000">₹5K</button>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Your Name</label>
+                        <input type="text" name="donor_name"
+                               value="{{ current_user.username if current_user.is_authenticated else '' }}"
+                               placeholder="Name or Organization" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Amount (₹)</label>
+                        <input type="number" step="0.01" name="amount" min="1" id="amountInput" placeholder="500.00" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" name="email" placeholder="receipt@example.com" required>
+                </div>
+
                 <div class="form-group">
                     <label>Target Initiative</label>
-                    <select name="project_id" required>
+                    <select name="project_id" required id="projectSelect">
+                        <option value="" disabled {% if not request.args.get('project_id') %}selected{% endif %}>Choose an initiative...</option>
                         {% for project in projects %}
-                        <option value="{{ project.id }}">{{ project.name }}</option>
+                        <option value="{{ project.id }}" {% if request.args.get('project_id')|int == project.id %}selected{% endif %}>
+                            {{ project.name }}
+                        </option>
                         {% endfor %}
                     </select>
                 </div>
-            </div>
 
-            <button type="submit" class="donate-btn">Finalize Donation</button>
-            
-            <p style="text-align: center; font-size: 12px; margin-top: 25px; color: rgba(255,255,255,0.4);">
-                <i class="fas fa-lock-alt"></i> Secure Transparency Dashboard | Instant Verification Receipt
-            </p>
-        </form>
+                <button type="submit" class="donate-btn" id="donateBtn">
+                    <i class="fas fa-heart"></i> Finalize Donation
+                </button>
+            </form>
+
+            <div class="security-note">
+                <i class="fas fa-lock"></i> Secure submission · Instant verification receipt
+            </div>
+        </div>
+
     </div>
 </div>
 
 <script>
-    // Scroll-based Video Playback
-    const video = document.getElementById('bgVideo');
-    const scrollSlowdown = 1000; 
+    // Preset amount buttons
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById('amountInput').value = this.dataset.amount;
+        });
+    });
 
-    window.addEventListener('scroll', () => {
-        const distance = window.scrollY;
-        video.currentTime = distance / scrollSlowdown;
+    // Clear preset selection if user types
+    document.getElementById('amountInput').addEventListener('input', function() {
+        document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    });
+
+    // Loading state
+    document.getElementById('donateForm').addEventListener('submit', function() {
+        const btn = document.getElementById('donateBtn');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        btn.disabled = true;
     });
 </script>
 {% endblock %}

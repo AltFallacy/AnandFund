@@ -1,168 +1,325 @@
 {% extends "base.html" %}
 
-{% block title %}Anandvan | Empathetic & Transparent Mission{% endblock %}
+{% block title %}Anandvan | Empowering Communities Through Transparency{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 <style>
-    /* Interactive Background Styling */
+    /* Video Background */
     .video-background {
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
         z-index: -100;
         overflow: hidden;
     }
     #bgVideo {
-        width: 100%;
-        height: 100%;
+        width: 100%; height: 100%;
         object-fit: cover;
-        filter: brightness(0.4);
-    }
-    .scroll-indicator {
-        position: absolute;
-        bottom: 30px;
-        left: 50%;
-        transform: translateX(-50%);
-        animation: bounce 2s infinite;
-        color: white;
-        font-size: 24px;
-    }
-    @keyframes bounce {
-        0%, 20%, 50%, 80%, 100% {transform: translateY(0) translateX(-50%);}
-        40% {transform: translateY(-10px) translateX(-50%);}
-        60% {transform: translateY(-5px) translateX(-50%);}
+        filter: brightness(0.35) saturate(1.2);
     }
     /* Override base padding for hero */
-    .main-content { padding-top: 0 !important; }
+    .main-content { padding-top: 0 !important; padding-bottom: 0 !important; }
+
+    /* Scroll indicator */
+    .scroll-indicator {
+        position: absolute;
+        bottom: 35px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        color: rgba(255,255,255,0.4);
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        cursor: pointer;
+        animation: bounce 3s infinite;
+        z-index: 3;
+    }
+    .scroll-indicator i { font-size: 1.2em; }
+    @keyframes bounce {
+        0%, 100% { transform: translateX(-50%) translateY(0); }
+        50%       { transform: translateX(-50%) translateY(-8px); }
+    }
+
+    /* Badge row */
+    .trust-badges {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-top: 45px;
+        animation: fadeUp 1s 0.8s ease both;
+    }
+    .trust-badge {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.75em;
+        color: rgba(255,255,255,0.45);
+        letter-spacing: 0.5px;
+    }
+    .trust-badge i { color: var(--primary); }
+
+    /* About features */
+    .about-features {
+        display: flex;
+        gap: 20px;
+        margin-top: 35px;
+        flex-wrap: wrap;
+    }
+    .feature-pill {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(46,204,113,0.08);
+        border: 1px solid rgba(46,204,113,0.18);
+        border-radius: 50px;
+        padding: 8px 16px;
+        font-size: 0.82em;
+        color: var(--primary);
+        font-weight: 500;
+    }
+
+    /* Section Divider */
+    .section-divider {
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+        margin: 0;
+    }
+
+    /* About section uses dark bg */
+    .about { background: #0d1117; }
+
+    /* Stats overlay on hero */
+    .hero-stat-row {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 6px;
+    }
+    .hero-stat-item {
+        font-size: 0.72em;
+        color: rgba(255,255,255,0.35);
+        letter-spacing: 0.5px;
+    }
+    .hero-stat-item strong { color: rgba(255,255,255,0.6); }
 </style>
 {% endblock %}
 
 {% block content %}
-    <div class="video-background">
-        <video id="bgVideo" muted playsinline preload="auto">
-            <source src="{{ url_for('static', filename='videos/vid_CEP.mp4') }}" type="video/mp4">
-        </video>
-    </div>
+<div class="video-background">
+    <video id="bgVideo" muted playsinline preload="auto" autoplay loop>
+        <source src="{{ url_for('static', filename='videos/vid_CEP.mp4') }}" type="video/mp4">
+    </video>
+</div>
 
-    <div class="cover">
-        <div class="information">
-            <div class="real-time-stats">
-                <h3>LIVE IMPACT</h3>
-                <h1 id="liveTotal">₹{{ "{:,.0f}".format(total_donations) }}</h1>
-                <p>Total Funds Raised Globally</p>
-            </div>
-            <br>
-            <h3>EMPOWERING COMMUNITIES</h3>
-            <h2>Together We Create</h2>
-            <h1> <span id="heroTitle">ANANDVAN</span> </h1>
-            <h3> <span>An Organization for Positive Change</span> </h3>
-            <br>
-            <div class="cta-btns">
-                <a href="#projects"><button>INITIATIVES</button></a>
-                <a href="{{ url_for('main.donate') }}"><button class="btn-primary">DONATE NOW</button></a>
-            </div>
+<!-- ══ Hero ══ -->
+<div class="cover" id="home">
+    <div class="information">
+        <div class="real-time-stats">
+            <h3>Live Impact Counter</h3>
+            <h1 id="liveTotal">₹{{ "{:,.0f}".format(total_donations) }}</h1>
+            <p>Total Funds Raised & Tracked</p>
         </div>
-        <div class="scroll-indicator"><i class="fas fa-chevron-down"></i></div>
-    </div>
 
-    <div class="about" id="about">
-        <div class="imgcontanner">
-            <div class="aboutimg"></div>
+        <h3>Empowering Communities Since 2020</h3>
+        <h2>Together We Create</h2>
+        <h1> <span id="heroTitle">ANANDVAN</span> </h1>
+        <h3> <span>A Transparent Organization for Positive Change</span> </h3>
+
+        <div class="cta-btns">
+            <a href="#projects"><button>View Initiatives</button></a>
+            <a href="{{ url_for('main.donate') }}"><button class="btn-primary"><i class="fas fa-heart"></i> &nbsp;Donate Now</button></a>
         </div>
-        <div class="aboutcontent">
-            <h5>TRUST & CLARITY</h5>
-            <h1>Why Support Anandvan?</h1>
-            <p>At Anandvan, we believe in complete transparency. Every donation is mapped to a specific initiative so you know exactly where your funds are going.</p>
-            <p>Our dedicated dashboard allows donors to view real-time fund utilization and verifiable expense receipts.</p>
-            <a href="{{ url_for('main.transparency') }}">VIEW TRANSPARENCY REPORT</a>
+
+        <div class="trust-badges">
+            <div class="trust-badge"><i class="fas fa-shield-alt"></i> 100% Verified</div>
+            <div class="trust-badge"><i class="fas fa-file-invoice"></i> Receipt-Backed</div>
+            <div class="trust-badge"><i class="fas fa-eye"></i> Publicly Transparent</div>
+            <div class="trust-badge"><i class="fas fa-chart-bar"></i> Real-Time Tracking</div>
         </div>
     </div>
 
-    <div class="service" id="projects">
-        <h5>CAUSES</h5>
-        <h1>Our Core Initiatives</h1>
-
-        <div class="details">
-            {% for project in projects[:4] %}
-            <div class="info-card" style="background-image: url('{{ url_for('static', filename=project.image_path) if project.image_path else 'https://source.unsplash.com/400x300/?' + project.name|replace(' ', ',') + ',kids' }}');">
-                <div class="card-overlay">
-                    <div class="logo"><i class="fas fa-hand-holding-heart"></i></div>
-                    <h3>{{ project.name }}</h3>
-                    <p class="short-desc">{{ project.description[:100] }}...</p>
-                    <a href="{{ url_for('main.donate', project_id=project.id) }}" class="card-btn">Support Initiative</a>
-                </div>
-            </div>
-            {% endfor %}
-            
-            {% if projects|length < 1 %}
-            <div class="info-card" style="background-image: url('https://source.unsplash.com/400x300/?education,kids');">
-                <div class="card-overlay">
-                    <div class="logo"><i class="fas fa-school"></i></div>
-                    <h3>Primary Education</h3>
-                    <p class="short-desc">Providing access to quality education and materials for underprivileged children.</p>
-                    <a href="#" class="card-btn">Support Initiative</a>
-                </div>
-            </div>
-            <div class="info-card" style="background-image: url('https://source.unsplash.com/400x300/?health,children');">
-                <div class="card-overlay">
-                    <div class="logo"><i class="fas fa-heartbeat"></i></div>
-                    <h3>Community Health</h3>
-                    <p class="short-desc">Ensuring medical aid and nutritional support for growing communities.</p>
-                    <a href="#" class="card-btn">Support Initiative</a>
-                </div>
-            </div>
-            {% endif %}
-        </div>
+    <div class="scroll-indicator" onclick="document.getElementById('about').scrollIntoView({behavior: 'smooth'})">
+        <i class="fas fa-chevron-down"></i>
+        <span>Explore</span>
     </div>
-    
-    <div class="transparency-summary">
-        <h1>Financial Integrity</h1>
-        <div class="counter-grid">
-            <div class="c-box">
-                <h2 id="totalRaised">₹0</h2>
-                <p>Total Raised</p>
-            </div>
-            <div class="c-box">
-                <h2 id="totalSpent">₹0</h2>
-                <p>Funds Utilized</p>
-            </div>
-            <div class="c-box">
-                <h2 id="currentBalance">₹0</h2>
-                <p>Available Balance</p>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ══ About ══ -->
+<div class="about" id="about">
+    <div class="imgcontanner">
+        <div class="aboutimg"></div>
+    </div>
+    <div class="aboutcontent">
+        <h5>Trust &amp; Clarity</h5>
+        <h1>Why Support<br>Anandvan?</h1>
+        <p>At Anandvan, we believe your donation deserves complete visibility. Every contribution is tracked end-to-end — from the moment it lands in our account to the verified expense receipt on the ground.</p>
+        <p>Our real-time dashboard shows donors exactly where funds are going, with no hidden fees and no administrative ambiguity.</p>
+
+        <div class="about-features">
+            <div class="feature-pill"><i class="fas fa-lock"></i> Encrypted Data</div>
+            <div class="feature-pill"><i class="fas fa-receipt"></i> Expense Receipts</div>
+            <div class="feature-pill"><i class="fas fa-users"></i> Community Impact</div>
+        </div>
+
+        <a href="{{ url_for('main.transparency') }}" style="margin-top: 30px;">View Full Transparency Report <i class="fas fa-arrow-right"></i></a>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ══ Core Initiatives ══ -->
+<div class="service" id="projects">
+    <h5>Causes</h5>
+    <h1>Our Core Initiatives</h1>
+
+    <div class="details">
+        {% for project in projects[:4] %}
+        <div class="info-card" style="background-image: url('{{ url_for('static', filename=project.image_path) if project.image_path else 'https://source.unsplash.com/400x300/?' + project.name|replace(' ', ',') + ',community' }}');">
+            <div class="card-overlay">
+                <div class="logo"><i class="fas fa-hand-holding-heart"></i></div>
+                <h3>{{ project.name }}</h3>
+                <p class="short-desc">{{ project.description[:120] if project.description else 'Making a real difference in people\'s lives.' }}...</p>
+                <a href="{{ url_for('main.donate', project_id=project.id) }}" class="card-btn">Support This Initiative</a>
             </div>
         </div>
-        <a href="{{ url_for('main.transparency') }}" class="view-all-btn">Detailed Breakdown</a>
+        {% endfor %}
+
+        {% if projects|length < 1 %}
+        <div class="info-card" style="background-image: url('https://source.unsplash.com/400x300/?education,children');">
+            <div class="card-overlay">
+                <div class="logo"><i class="fas fa-school"></i></div>
+                <h3>Primary Education</h3>
+                <p class="short-desc">Providing access to quality education and materials for underprivileged children.</p>
+                <a href="#" class="card-btn">Support Initiative</a>
+            </div>
+        </div>
+        <div class="info-card" style="background-image: url('https://source.unsplash.com/400x300/?health,community');">
+            <div class="card-overlay">
+                <div class="logo"><i class="fas fa-heartbeat"></i></div>
+                <h3>Community Health</h3>
+                <p class="short-desc">Ensuring medical aid and nutritional support for growing communities.</p>
+                <a href="#" class="card-btn">Support Initiative</a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ══ Financial Integrity ══ -->
+<div class="transparency-summary">
+    <h5 style="font-size:0.72em;letter-spacing:3.5px;color:var(--primary);text-transform:uppercase;font-weight:600;margin-bottom:12px;">Our Numbers</h5>
+    <h1>Financial Integrity</h1>
+    <p>Every rupee, accounted for. Our open ledger gives you complete confidence in your contribution.</p>
+
+    <div class="counter-grid">
+        <div class="c-box">
+            <i class="fas fa-hand-holding-usd" style="color:var(--primary);font-size:1.5em;margin-bottom:15px;display:block;"></i>
+            <h2 id="totalRaised">₹0</h2>
+            <p>Total Raised</p>
+        </div>
+        <div class="c-box">
+            <i class="fas fa-chart-pie" style="color:var(--primary);font-size:1.5em;margin-bottom:15px;display:block;"></i>
+            <h2 id="totalSpent">₹0</h2>
+            <p>Funds Utilized</p>
+        </div>
+        <div class="c-box">
+            <i class="fas fa-wallet" style="color:var(--primary);font-size:1.5em;margin-bottom:15px;display:block;"></i>
+            <h2 id="currentBalance">₹0</h2>
+            <p>Available Balance</p>
+        </div>
     </div>
 
-    <footer>
-        <p>&copy; 2026 Anandvan Cost and Donation Management | Transparent & Verified</p>
-    </footer>
+    <a href="{{ url_for('main.transparency') }}" class="view-all-btn">
+        <i class="fas fa-table"></i> View Detailed Breakdown
+    </a>
+</div>
 
-    <script>
-        // Scroll-based Video Playback
-        const video = document.getElementById('bgVideo');
-        const scrollSlowdown = 1000; 
+<!-- ══ Footer ══ -->
+<footer>
+    <div class="footer-inner">
+        <div class="footer-logo">⬡ ANANDVAN</div>
+        <div class="footer-links">
+            <a href="/">Home</a>
+            <a href="{{ url_for('main.transparency') }}">Transparency</a>
+            <a href="/#projects">Initiatives</a>
+            <a href="{{ url_for('main.donate') }}">Donate</a>
+            <a href="{{ url_for('main.login') }}">Staff Login</a>
+        </div>
+        <p>&copy; 2026 Anandvan Cost and Donation Management &mdash; Transparent &amp; Verified by Design</p>
+    </div>
+</footer>
 
-        window.addEventListener('scroll', () => {
-            const distance = window.scrollY;
-            video.currentTime = distance / scrollSlowdown;
-        });
+<script>
+    // Scroll-based Video Playback (paused approach for performance)
+    const video = document.getElementById('bgVideo');
+    let scrollRAF = null;
 
-        async function fetchLiveStats() {
-            try {
-                const res = await fetch('/api/totals');
-                const data = await res.json();
-                const liveTotal = document.getElementById('liveTotal');
-                if (liveTotal) liveTotal.innerText = '₹' + data.total_donations.toLocaleString();
-                document.getElementById('totalRaised').innerText = '₹' + data.total_donations.toLocaleString();
-                document.getElementById('totalSpent').innerText = '₹' + data.total_expenses.toLocaleString();
-                document.getElementById('currentBalance').innerText = '₹' + data.balance.toLocaleString();
-            } catch (e) { console.error("Failed to fetch live stats", e); }
+    window.addEventListener('scroll', () => {
+        if (!scrollRAF) {
+            scrollRAF = requestAnimationFrame(() => {
+                // Subtly dim video more as user scrolls
+                const progress = Math.min(window.scrollY / window.innerHeight, 1);
+                video.style.opacity = 1 - (progress * 0.5);
+                scrollRAF = null;
+            });
         }
-        fetchLiveStats();
-        setInterval(fetchLiveStats, 30000);
-    </script>
+    });
+
+    // Animated counter helper
+    function animateValue(el, start, end, duration) {
+        let startTime = null;
+        const format = v => '₹' + Math.floor(v).toLocaleString('en-IN');
+        const step = (timestamp) => {
+            if (!startTime) startTime = timestamp;
+            const progress = Math.min((timestamp - startTime) / duration, 1);
+            const ease = 1 - Math.pow(1 - progress, 4);
+            el.innerText = format(start + (end - start) * ease);
+            if (progress < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+    }
+
+    // Fetch live stats
+    async function fetchLiveStats() {
+        try {
+            const res = await fetch('/api/totals');
+            const data = await res.json();
+            const liveTotal = document.getElementById('liveTotal');
+            if (liveTotal) liveTotal.innerText = '₹' + data.total_donations.toLocaleString('en-IN');
+
+            const raised   = document.getElementById('totalRaised');
+            const spent    = document.getElementById('totalSpent');
+            const balance  = document.getElementById('currentBalance');
+            if (raised)   animateValue(raised,   0, data.total_donations, 1800);
+            if (spent)    animateValue(spent,    0, data.total_expenses, 1800);
+            if (balance)  animateValue(balance,  0, data.balance, 1800);
+        } catch (e) { console.error('Failed to fetch live stats', e); }
+    }
+
+    // Trigger counter when section is in view
+    const counterSection = document.querySelector('.transparency-summary');
+    let counted = false;
+    const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && !counted) {
+            counted = true;
+            fetchLiveStats();
+        }
+    }, { threshold: 0.3 });
+    if (counterSection) observer.observe(counterSection);
+
+    // Always update liveTotal on load
+    fetchLiveStats();
+    setInterval(fetchLiveStats, 30000);
+</script>
 {% endblock %}

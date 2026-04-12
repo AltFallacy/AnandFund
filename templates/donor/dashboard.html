@@ -1,31 +1,309 @@
 {% extends "base.html" %}
 
-{% block content %}
-<div class="card">
-    <h3>Our Active Projects</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>Project Name</th>
-                <th>Description</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for project in projects %}
-            <tr>
-                <td>{{ project.name }}</td>
-                <td>{{ project.description }}</td>
-                <td><a class="btn" href="{{ url_for('main.donate') }}">Support this Cause</a></td>
-            </tr>
-            {% endfor %}
-            {% if not projects %}
-            <tr>
-                <td colspan="3">No active projects available currently.</td>
-            </tr>
-            {% endif %}
-        </tbody>
-    </table>
-</div>
+{% block title %}My Dashboard | Anandvan Donor Portal{% endblock %}
 
+{% block extra_css %}
+<style>
+:root {
+    --primary: #2ecc71;
+    --bg-card: rgba(22,27,34,0.9);
+    --border: rgba(255,255,255,0.08);
+    --text: #e6edf3;
+    --muted: #8b949e;
+}
+
+.donor-container { max-width: 1100px; margin: 0 auto; padding: 10px 30px 50px; }
+
+/* Header */
+.donor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 35px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.donor-header-left .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(46,204,113,0.1);
+    border: 1px solid rgba(46,204,113,0.2);
+    border-radius: 50px;
+    padding: 5px 14px;
+    color: var(--primary);
+    font-size: 0.78em;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+.donor-header-left h1 { font-size: 1.8em; font-weight: 800; color: var(--text); margin-bottom: 5px; }
+.donor-header-left p { color: var(--muted); font-size: 0.9em; }
+
+/* Stats */
+.donor-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+    margin-bottom: 30px;
+}
+.stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s, border-color 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+.stat-card:hover { transform: translateY(-4px); border-color: rgba(46,204,113,0.2); }
+.stat-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg,transparent,rgba(46,204,113,0.5),transparent);
+    opacity: 0.6;
+}
+.stat-card i { font-size: 1.5em; color: var(--primary); margin-bottom: 15px; display: block; }
+.stat-card h3 { font-size: 1.8em; font-weight: 800; color: var(--text); margin-bottom: 5px; }
+.stat-card p { color: var(--muted); font-size: 0.85em; }
+
+/* Two-col grid */
+.donor-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 25px;
+}
+@media (max-width: 900px) { .donor-grid { grid-template-columns: 1fr; } }
+
+/* Card panels */
+.panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    backdrop-filter: blur(10px);
+}
+.panel h3 {
+    font-size: 1em; font-weight: 700; color: var(--text);
+    margin-bottom: 22px;
+    display: flex; align-items: center; gap: 10px;
+}
+.panel h3 i { color: var(--primary); }
+
+/* Donation history table */
+.hist-table { width: 100%; border-collapse: collapse; }
+.hist-table thead tr { border-bottom: 1px solid var(--border); }
+.hist-table th {
+    padding: 10px 14px;
+    text-align: left;
+    color: var(--muted);
+    font-size: 0.73em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.hist-table td {
+    padding: 13px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--text);
+    font-size: 0.87em;
+    vertical-align: middle;
+}
+.hist-table tr:last-child td { border-bottom: none; }
+.hist-table tr:hover td { background: rgba(255,255,255,0.02); }
+.amount-pos { color: var(--primary); font-weight: 700; }
+.date-sm { color: var(--muted); font-size: 0.8em; }
+.proj-pill {
+    background: rgba(52,152,219,0.12);
+    border: 1px solid rgba(52,152,219,0.2);
+    color: #3498db;
+    padding: 3px 9px;
+    border-radius: 50px;
+    font-size: 0.75em;
+    font-weight: 600;
+}
+
+/* Initiatives mini cards */
+.initiative-list { display: flex; flex-direction: column; gap: 14px; }
+.initiative-mini {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: all 0.25s;
+    text-decoration: none;
+}
+.initiative-mini:hover {
+    border-color: rgba(46,204,113,0.25);
+    background: rgba(46,204,113,0.04);
+    transform: translateX(4px);
+}
+.init-icon {
+    width: 40px; height: 40px;
+    background: rgba(46,204,113,0.1);
+    border: 1px solid rgba(46,204,113,0.2);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--primary); font-size: 1em;
+    flex-shrink: 0;
+}
+.init-info { flex: 1; }
+.init-name { color: var(--text); font-size: 0.88em; font-weight: 600; margin-bottom: 2px; }
+.init-desc { color: var(--muted); font-size: 0.75em; }
+.init-arrow { color: var(--muted); font-size: 0.8em; }
+.initiative-mini:hover .init-arrow { color: var(--primary); }
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+}
+.empty-state i { font-size: 2.5em; display: block; margin-bottom: 12px; opacity: 0.3; }
+.empty-state p { font-size: 0.88em; margin-bottom: 20px; }
+.empty-state a {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--primary);
+    color: white;
+    padding: 10px 22px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-size: 0.85em;
+    font-weight: 600;
+    transition: all 0.25s;
+}
+.empty-state a:hover { background: #2ecc71; box-shadow: 0 6px 20px rgba(46,204,113,0.35); transform: translateY(-2px); }
+
+/* Donate CTA */
+.donate-cta {
+    background: linear-gradient(135deg, rgba(46,204,113,0.12), rgba(26,188,156,0.06));
+    border: 1px solid rgba(46,204,113,0.2);
+    border-radius: 16px;
+    padding: 28px;
+    text-align: center;
+    margin-top: 25px;
+}
+.donate-cta h4 { color: var(--text); font-size: 1.1em; margin-bottom: 8px; }
+.donate-cta p { color: var(--muted); font-size: 0.85em; margin-bottom: 20px; line-height: 1.65; }
+.donate-cta a {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--primary);
+    color: white;
+    padding: 12px 28px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-size: 0.9em;
+    font-weight: 700;
+    transition: all 0.25s;
+    box-shadow: 0 6px 20px rgba(46,204,113,0.3);
+}
+.donate-cta a:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(46,204,113,0.45); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="donor-container">
+
+    <div class="donor-header">
+        <div class="donor-header-left">
+            <div class="badge"><i class="fas fa-heart"></i> Donor Portal</div>
+            <h1>Welcome, {{ current_user.username }} 💚</h1>
+            <p>Thank you for supporting Anandvan. Track your contributions and explore our initiatives.</p>
+        </div>
+        <a href="{{ url_for('main.donate') }}" style="display:inline-flex;align-items:center;gap:8px;background:var(--primary);color:white;padding:11px 24px;border-radius:10px;text-decoration:none;font-size:0.9em;font-weight:700;box-shadow:0 6px 20px rgba(46,204,113,0.3);transition:all 0.25s;"
+           onmouseenter="this.style.transform='translateY(-2px)'"
+           onmouseleave="this.style.transform=''">
+            <i class="fas fa-heart"></i> Donate Again
+        </a>
+    </div>
+
+    <!-- Stats -->
+    <div class="donor-stats">
+        <div class="stat-card">
+            <i class="fas fa-rupee-sign"></i>
+            <h3>₹{{ "{:,.0f}".format(user_total) }}</h3>
+            <p>Your Total Contributions</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-calendar-check"></i>
+            <h3>{{ donations|length }}</h3>
+            <p>Donations Made</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-project-diagram"></i>
+            <h3>{{ projects|length }}</h3>
+            <p>Active Initiatives</p>
+        </div>
+    </div>
+
+    <div class="donor-grid">
+        <!-- Donation History -->
+        <div class="panel">
+            <h3><i class="fas fa-history"></i> Your Donation History</h3>
+            {% if donations %}
+            <table class="hist-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Initiative</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in donations|sort(attribute='date', reverse=True) %}
+                    <tr>
+                        <td class="date-sm">{{ d.date.strftime('%d %b %Y') }}</td>
+                        <td><span class="proj-pill">{{ d.project.name }}</span></td>
+                        <td class="amount-pos">₹{{ "{:,.0f}".format(d.amount) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-heart"></i>
+                <p>You haven't made any donations yet.<br>Support a cause that matters to you!</p>
+                <a href="{{ url_for('main.donate') }}"><i class="fas fa-heart"></i> Make Your First Donation</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Active Initiatives -->
+        <div>
+            <div class="panel">
+                <h3><i class="fas fa-seedling"></i> Support an Initiative</h3>
+                <div class="initiative-list">
+                    {% for project in projects %}
+                    <a href="{{ url_for('main.donate', project_id=project.id) }}" class="initiative-mini">
+                        <div class="init-icon"><i class="fas fa-hand-holding-heart"></i></div>
+                        <div class="init-info">
+                            <div class="init-name">{{ project.name }}</div>
+                            <div class="init-desc">{{ project.description[:55] if project.description else 'Support this cause' }}...</div>
+                        </div>
+                        <i class="fas fa-chevron-right init-arrow"></i>
+                    </a>
+                    {% else %}
+                    <div class="empty-state" style="padding: 20px;">
+                        <i class="fas fa-inbox"></i>
+                        <p>No initiatives available yet.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="donate-cta">
+                <h4>💚 Your Impact Matters</h4>
+                <p>Every contribution you make goes directly into verified causes. Check our transparency report to see exactly how your funds were used.</p>
+                <a href="{{ url_for('main.transparency') }}">
+                    <i class="fas fa-eye"></i> View Transparency Report
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
 {% endblock %}
